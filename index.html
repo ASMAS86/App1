@@ -60,8 +60,8 @@ footer svg{width:13px;height:13px}
 .fld input,.fld textarea{font-family:inherit;font-size:13.5px;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;width:100%;min-height:42px;outline:none;-webkit-appearance:none;appearance:none}
 .fld textarea{min-height:64px;resize:vertical}
 .fld input:focus,.fld textarea:focus{border-color:var(--coral);box-shadow:0 0 0 3px rgba(244,88,106,.15)}
-.coord{display:flex;align-items:center;direction:ltr;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.coord span{padding:0 12px;min-height:42px;display:flex;align-items:center;background:var(--tint);color:var(--text);font-weight:700;font-size:13px;letter-spacing:.5px;border-right:1px solid var(--line);white-space:nowrap}
+.coord{display:flex;align-items:center;direction:rtl;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.coord span{padding:0 12px;min-height:42px;display:flex;align-items:center;background:var(--tint);color:var(--text);font-weight:700;font-size:13px;letter-spacing:.5px;border-left:1px solid var(--line);white-space:nowrap}
 .coord input{border:0!important;border-radius:0!important;box-shadow:none!important;flex:1;min-width:0}
 .coord:focus-within{border-color:var(--coral);box-shadow:0 0 0 3px rgba(244,88,106,.15)}
 input.ltr{text-align:right}
@@ -86,9 +86,49 @@ input.ltr{text-align:right}
 #toast.on{opacity:1}
 #printArea{display:none}
 @media print{@page{size:A4;margin:0}:root{padding:0!important;background:#fff!important}html,body{background:#fff!important}body>*:not(#printArea){display:none!important}#printArea{display:block}#printArea img{width:210mm;height:297mm;display:block}}
+
+.fld input,.fld textarea{text-align:right}
+select{font-family:inherit;font-size:13.5px;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;width:100%;min-height:42px}
+#splash{position:fixed;inset:0;z-index:300;background:radial-gradient(120% 90% at 50% 0,#262d75,#0d1030 65%);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;padding:20px;transition:opacity .6s}
+#splash.out{opacity:0;pointer-events:none}
+#splash:before{content:"";position:absolute;inset:0;background:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px) 0 0/22px 22px,linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px) 0 0/22px 22px;animation:cine 3s both}
+.sl{position:relative;width:120px;height:120px;border-radius:50%;animation:pop 1.2s cubic-bezier(.2,.8,.2,1) both}
+.sl img{width:100%;height:100%;border-radius:50%;object-fit:cover;background:#fff;position:relative}
+.sl:before,.sl:after{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid transparent;border-top-color:#f4586a;border-bottom-color:#f4586a;animation:spin 1.6s linear infinite}
+.sl:after{inset:-20px;border-top-color:#9aa0d6;border-bottom-color:#9aa0d6;animation-duration:2.4s;animation-direction:reverse;opacity:.6}
+.st{position:relative;font-size:21px;font-weight:700;margin-top:38px;animation:cine 1.4s 1.2s both}
+.ss{position:relative;font-size:11px;letter-spacing:3px;color:#9aa0d6;margin-top:6px;animation:cine 1.4s 1.7s both}
+.lg{position:relative;width:100%;max-width:300px;margin-top:26px;display:flex;flex-direction:column;gap:10px;animation:cine 1s 2.6s both}
+.lg input{font-family:inherit;font-size:14px;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:11px 14px;text-align:center;outline:none;direction:ltr;width:100%}
+.lg input:focus{border-color:#f4586a}
+.lg button{border:0;border-radius:12px;padding:12px;background:linear-gradient(135deg,#f4586a,#e8445a);color:#fff;font-family:inherit;font-size:14px;font-weight:700}
+#lgE{font-size:11.5px;color:#ff9aa6;min-height:16px}
+@keyframes pop{from{opacity:0;transform:scale(.3) rotate(-120deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes cine{from{opacity:0;letter-spacing:14px;filter:blur(10px);transform:translateY(10px)}to{opacity:1;filter:blur(0);transform:none}}
+.note{margin-top:14px;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:11px 12px;font-size:11px;color:var(--muted);line-height:1.7}
+.note b{color:var(--text);font-size:12px}.note p{margin:3px 0}
+.note.warn{border-color:var(--coral);background:rgba(244,88,106,.07)}.note.warn #bkT{color:var(--coral);font-weight:700}
+.nr{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px}
+.nr select{width:64px;min-height:34px;padding:4px}.nr button{border:0;border-radius:10px;background:var(--navy2);color:#fff;font-family:inherit;font-size:11.5px;padding:8px 12px}
+.sbox{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 12px;margin-bottom:10px}
+.sbox input{border:0;outline:0;background:none;flex:1;min-height:44px;font-family:inherit;font-size:14px;color:var(--text);direction:rtl}
+.sbox svg{color:var(--coral)}
+#lCnt{font-size:10.5px;color:#9aa0d6}
+.rc{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:10px 12px;margin-bottom:8px}
+.rc b{font-size:13px}.rc div{font-size:11px;color:var(--muted);margin-top:2px}
+#rc{width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:12px;margin:12px 0}
+.rt{width:100%;border-collapse:collapse;font-size:11.5px;background:var(--card);border-radius:12px;overflow:hidden}
+.rt td,.rt th{border:1px solid var(--line);padding:6px;text-align:center}.rt th{background:var(--navy2);color:#fff}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.sg .stat b{font-size:17px}
+#mdl{position:fixed;inset:0;z-index:120;background:rgba(10,12,34,.6);display:flex;align-items:flex-end}
+#mdl>div{width:100%;background:var(--card);border-radius:20px 20px 0 0;padding:16px 14px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px}
+#mdl button{border:1px solid var(--line);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;font-weight:600;border-radius:12px;padding:12px}
 </style>
 </head>
 <body>
+<div id="splash"><div class="sl"><img id="splImg" alt=""></div><div class="st">منظومة التحري المناطقي</div><div class="ss" dir="ltr">REGIONAL INVESTIGATION SYSTEM</div>
+<div class="lg"><input id="lgU" placeholder="اسم المستخدم" autocomplete="off" autocapitalize="none" autocorrect="off"><input id="lgP" type="password" placeholder="كلمة المرور"><div id="lgE"></div><button id="lgGo">تسجيل الدخول</button></div></div>
 <svg width="0" height="0" style="position:absolute">
 <symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
 <symbol id="list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></symbol>
@@ -125,10 +165,11 @@ input.ltr{text-align:right}
     <button class="card" id="bList"><span class="ic"><svg class="i"><use href="#list"/></svg></span>عرض كل القيود</button>
     <button class="card" id="bSearch"><span class="ic"><svg class="i"><use href="#search"/></svg></span>بحث عن قيد</button>
     <button class="card" id="bRep"><span class="ic"><svg class="i"><use href="#chart"/></svg></span>تقارير وإحصاءات</button>
-    <button class="card" id="bImp"><span class="ic"><svg class="i"><use href="#imp"/></svg></span>استيراد Excel</button>
+    <button class="card" id="bImp"><span class="ic"><svg class="i"><use href="#imp"/></svg></span>استيراد Excel / CSV</button>
     <button class="card wide" id="bExp"><span class="ic"><svg class="i"><use href="#exp"/></svg></span>تصدير Excel / CSV</button>
   </div>
-  <footer><svg class="i"><use href="#shield"/></svg>البيانات محفوظة على هذا الجهاز فقط</footer>
+  <div class="note" id="bk"><b>تذكير مهم: النسخة الاحتياطية</b><p>القيود محفوظة داخل الجهاز فقط وقد تضيع عند حذف التطبيق أو مسح بيانات المتصفح أو تلف الجهاز. صدّر القيود بانتظام واحفظ الملف بمكان آمن.</p><div class="nr"><label>التصدير كل <select id="bkD"><option>7</option><option>15</option><option>30</option><option>60</option></select> يوم</label><button id="bkX">تصدير الآن</button></div><p id="bkT"></p></div>
+  <footer><svg class="i"><use href="#shield"/></svg>البيانات محفوظة ومؤمنة بواسطة iPhone ASM</footer>
 </main>
 </section>
 
@@ -149,6 +190,18 @@ input.ltr{text-align:right}
   </div>
 </section>
 
+<section id="lst" class="view hidden">
+  <div class="tb"><button class="back" id="lBack" aria-label="رجوع"><svg class="i"><use href="#back"/></svg></button><div><b>القيود</b><span id="lCnt"></span></div></div>
+  <div class="wrapf"><div class="sbox"><svg class="i"><use href="#search"/></svg><input id="q" dir="rtl" placeholder="ابحث: اسم، أم، زوجة، مولد، عنوان..." autocomplete="off"></div><div id="res"></div></div>
+</section>
+<section id="rep" class="view hidden">
+  <div class="tb"><button class="back" id="rBack" aria-label="رجوع"><svg class="i"><use href="#back"/></svg></button><div><b>التقارير والإحصاء</b><span>حسب تاريخ كل قيد</span></div></div>
+  <div class="wrapf"><div class="fgrid"><div class="fld"><label>السنة</label><select id="ry"></select></div><div class="fld"><label>الشهر</label><select id="rm"></select></div></div>
+  <canvas id="rc"></canvas><div class="dim" style="font-size:10.5px;color:var(--muted)">الأعمدة: عدد القيود · الخط الأحمر: النمو · المتقطع: المعدل الشهري</div><div id="rt" style="margin-top:10px"></div><div class="sg" id="rs"></div>
+  <div class="acts"><button class="abtn pv" id="rPrev"><svg class="i"><use href="#eye"/></svg>معاينة التقرير (A4)</button><button class="abtn" id="rJpg"><svg class="i"><use href="#img"/></svg>حفظ JPEG</button><button class="abtn" id="rPdf"><svg class="i"><use href="#pdf"/></svg>حفظ PDF</button><button class="abtn" id="rPrn"><svg class="i"><use href="#print"/></svg>طباعة</button></div></div>
+</section>
+<div id="mdl" class="hidden"><div><b>تصدير القيود</b><button id="xX">Excel (.xlsx)</button><button id="xC">CSV</button><button id="xN">إلغاء</button></div></div>
+<input type="file" id="fi" accept=".xlsx,.xls,.csv,text/csv" class="hidden">
 <div id="prev" class="prev hidden">
   <div class="pvbar"><span>معاينة الاستمارة (A4)</span><button class="back" id="pvClose" aria-label="إغلاق"><svg class="i"><use href="#x"/></svg></button></div>
   <div class="pvbody" id="pvBody"></div>
@@ -186,7 +239,7 @@ FIELDS.forEach(function(f){
   var el,box=null;
   if(f[2]==='area'){el=document.createElement('textarea');el.rows=2;}
   else{el=document.createElement('input');el.type=f[2]==='date'?'date':'text';}
-  el.id='i_'+f[0];
+  el.id='i_'+f[0];if(f[2]==='date')el.lang='en-GB';
   if(f[2]==='tel'){
     el.dir='ltr';el.className='ltr';el.inputMode='numeric';el.maxLength=11;el.placeholder='07xxxxxxxxx';
     el.addEventListener('input',function(){el.value=digits(el.value).slice(0,11);});
@@ -195,7 +248,7 @@ FIELDS.forEach(function(f){
     el.addEventListener('input',function(){var d=digits(el.value).slice(0,10);el.value=d.length>5?d.slice(0,5)+' '+d.slice(5):d;});
     box=document.createElement('div');box.className='coord';
     var pre=document.createElement('span');pre.textContent='38S MB';box.appendChild(pre);box.appendChild(el);
-  }else if(f[2]!=='date'){el.dir='auto';}
+  }else if(f[2]!=='date'){el.dir='rtl';}
   el.autocomplete='off';
   w.appendChild(lb);w.appendChild(box||el);frm.appendChild(w);
 });
@@ -212,7 +265,7 @@ window.addEventListener('popstate',function(){
   if(!$('prev').classList.contains('hidden')){$('prev').classList.add('hidden');return;}
   show('home');
 });
-['bList','bSearch','bRep','bImp','bExp'].forEach(function(id){$(id).onclick=function(){toast('هذه الميزة نضيفها في الخطوة القادمة');};});
+
 
 /* ---------- database (IndexedDB) ---------- */
 function db(){return new Promise(function(res,rej){var q=indexedDB.open('regional_db',1);q.onupgradeneeded=function(){q.result.createObjectStore('records',{keyPath:'id',autoIncrement:true});};q.onsuccess=function(){res(q.result);};q.onerror=function(){rej(q.error);};});}
@@ -283,7 +336,7 @@ function background(x,rnd,code){
   microtext(x,14.6*MM,'جهاز الأمن الوطني العراقي • '+code+' • ','rgba(13,16,48,.55)');
   microtext(x,283.4*MM,'مشروع الأمن المناطقي • '+code+' • ','rgba(13,16,48,.55)');
 }
-function header(x,id){
+function header(x,id,lb){
   var rx=W-14*MM,d=20*MM,cx=rx-d/2,cy=27*MM,lg=$('logoImg');
   x.save();x.beginPath();x.arc(cx,cy,d/2,0,7);x.clip();x.fillStyle='#fff';x.fillRect(cx-d/2,cy-d/2,d,d);
   if(lg&&lg.complete&&lg.naturalWidth)x.drawImage(lg,cx-d/2,cy-d/2,d,d);x.restore();
@@ -291,17 +344,17 @@ function header(x,id){
   var tx=rx-d-5*MM;x.direction='rtl';x.textAlign='right';
   x.fillStyle=NAVY;fnt(x,5.4,700);x.fillText('جهاز الأمن الوطني العراقي',tx,cy-0.8*MM);
   x.fillStyle=GOLD;fnt(x,3.9,600);x.fillText('مشروع الأمن المناطقي',tx,cy+6.2*MM);
-  x.textAlign='left';x.fillStyle='#6a7092';fnt(x,3,600);x.fillText('رقم القيد',14*MM,cy-3.5*MM);
-  x.fillStyle=NAVY;fnt(x,6,700);x.fillText(id?('000000'+id).slice(-6):'— — —',14*MM,cy+4.5*MM);
+  x.textAlign='left';x.fillStyle='#6a7092';fnt(x,3,600);x.fillText(lb||'رقم القيد',14*MM,cy-3.5*MM);
+  x.fillStyle=NAVY;fnt(x,6,700);x.fillText(lb?id:(id?('000000'+id).slice(-6):'— — —'),14*MM,cy+4.5*MM);
   x.fillStyle=GOLD;x.fillRect(14*MM,41*MM,182*MM,0.7*MM);x.fillStyle=NAVY;x.fillRect(14*MM,42.4*MM,182*MM,0.2*MM);
 }
-function title(x){
+function title(x,t){
   rr(x,14*MM,46*MM,182*MM,11*MM,2*MM);x.fillStyle='rgba(241,244,249,.88)';x.fill();x.strokeStyle='#cdd4e3';x.lineWidth=0.3*MM;x.stroke();
   x.fillStyle='#f4586a';x.fillRect(W-14*MM-1.6*MM,46*MM+2.2*MM,0.9*MM,6.6*MM);
-  x.direction='rtl';x.textAlign='center';x.fillStyle=NAVY;fnt(x,5.8,700);x.fillText('استمارة التحري الميداني',W/2,46*MM+5.5*MM+0.35*5.8*MM);
+  x.direction='rtl';x.textAlign='center';x.fillStyle=NAVY;fnt(x,5.8,700);x.fillText(t||'استمارة التحري الميداني',W/2,46*MM+5.5*MM+0.35*5.8*MM);
 }
 function fmtDate(v){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v);return m?(m[3]+'/'+m[2]+'/'+m[1]):v;}
-function valOf(rec,f){var v=(rec[f[0]]||'').trim();return f[2]==='date'?fmtDate(v):v;}
+function valOf(rec,f){var v=(rec[f[0]]||'').trim();v=en(v);return f[2]==='date'?fmtDate(v):v;}
 function wrap(x,text,maxW,fs,maxLines){
   fnt(x,fs,400);x.direction='rtl';
   var out=[];
@@ -389,11 +442,14 @@ function deliver(blob,name){
   dl(blob,name);
 }
 function dl(blob,name){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},4000);}
-function needData(){if(!check())return false;var r=readForm();if(!FIELDS.some(function(f){return r[f[0]];})){toast('اكتب بعض البيانات أولًا');return false;}return true;}
-function doJpg(){if(!needData())return;var r=readForm(),c=sheet(r,null);deliver(new Blob([jpgBytes(c)],{type:'image/jpeg'}),fname('jpg',r));}
-function doPdf(){if(!needData())return;var r=readForm(),c=sheet(r,null);deliver(pdfBlob(jpgBytes(c),c.width,c.height),fname('pdf',r));}
+var src=null;
+function needData(){if(src)return true;if(!check())return false;var r=readForm();if(!FIELDS.some(function(f){return r[f[0]];})){toast('اكتب بعض البيانات أولًا');return false;}return true;}
+function getS(){if(src)return src;var r=readForm();return{r:r,f:function(){return sheet(r,null);}};}
+function nm(s,e){return s.n?s.n+'.'+e:fname(e,s.r);}
+function doJpg(){if(!needData())return;var s=getS(),c=s.f();deliver(new Blob([jpgBytes(c)],{type:'image/jpeg'}),nm(s,'jpg'));}
+function doPdf(){if(!needData())return;var s=getS(),c=s.f();deliver(pdfBlob(jpgBytes(c),c.width,c.height),nm(s,'pdf'));}
 function doPrint(){
-  if(!needData())return;var c=sheetNow(),img=new Image();
+  if(!needData())return;var c=getS().f(),img=new Image();
   var go=function(){window.print();};
   img.src=c.toDataURL('image/jpeg',0.95);$('printArea').innerHTML='';$('printArea').appendChild(img);
   if(img.decode)img.decode().then(go,go);else img.onload=go;
@@ -405,15 +461,123 @@ function doPrint(){
 /* ---------- preview ---------- */
 var fontsReady=Promise.resolve();
 try{fontsReady=Promise.all([document.fonts.load('400 20px Cairo'),document.fonts.load('700 20px Cairo'),document.fonts.load('600 20px Cairo')]).catch(function(){});}catch(e){}
-$('bPrev').onclick=function(){
-  if(!needData())return;
-  fontsReady.then(function(){
-    var c=sheetNow(),b=$('pvBody');b.classList.remove('z');b.innerHTML='';b.appendChild(c);
-    c.onclick=function(){b.classList.toggle('z');};
-    history.pushState({v:'prev'},'');$('prev').classList.remove('hidden');b.scrollTop=0;
-  });
-};
+function openPrev(c){var b=$('pvBody');b.classList.remove('z');b.innerHTML='';b.appendChild(c);c.onclick=function(){b.classList.toggle('z');};history.pushState({v:'prev'},'');$('prev').classList.remove('hidden');b.scrollTop=0;}
+$('bPrev').onclick=function(){src=null;if(!needData())return;fontsReady.then(function(){openPrev(sheetNow());});};
 $('pvClose').onclick=function(){history.back();};
+
+/* ---------- v2 ---------- */
+['bJpg','bPdf','bPrn'].forEach(function(i){var o=$(i).onclick;$(i).onclick=function(){src=null;o();};});
+function en(s){return String(s).replace(/[٠-٩]/g,function(c){return c.charCodeAt(0)-1632;}).replace(/[۰-۹]/g,function(c){return c.charCodeAt(0)-1776;});}
+document.addEventListener('input',function(e){var t=e.target;if(t.tagName==='INPUT'||t.tagName==='TEXTAREA'){var v=t.value,n=en(v);if(v!==n){var p=t.selectionStart;t.value=n;try{t.setSelectionRange(p,p);}catch(x){}}}},true);
+function nz(s){return en(s).toLowerCase().replace(/[\u064B-\u0652\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){}}
+function nav(v){history.pushState({v:v},'');show(v);}
+['lBack','rBack'].forEach(function(i){$(i).onclick=function(){history.back();};});
+/* login */
+$('splImg').src=$('logoImg').src;
+function sha(s){return crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)).then(function(b){return Array.prototype.map.call(new Uint8Array(b),function(v){return('0'+v.toString(16)).slice(-2);}).join('');});}
+function login(){sha($('lgU').value.trim()+':'+$('lgP').value).then(function(h){if(h==='30d88cf07bfeb42edcd6eeabe4b90346e944a8804dfa6284f39209192dfdc374'){$('splash').classList.add('out');setTimeout(function(){$('splash').remove();},700);bkCheck(1);}else{$('lgE').textContent='اسم المستخدم أو كلمة المرور غير صحيحة';$('lgP').value='';}}).catch(function(){$('lgE').textContent='تعذّر التحقق، افتح التطبيق عبر الرابط الرسمي';});}
+$('lgGo').onclick=login;$('lgP').onkeydown=function(e){if(e.key==='Enter')login();};
+/* list & search */
+var ALL=[];
+function renderList(){
+  var tk=nz($('q').value).split(/\s+/).filter(Boolean),a=ALL.filter(function(r){return tk.every(function(k){return r._s.indexOf(k)>-1;});}),b=$('res');
+  b.innerHTML='';$('lCnt').textContent=a.length+' من '+ALL.length+' قيد';
+  a.slice(0,100).forEach(function(r){
+    var d=document.createElement('div');d.className='rc';
+    var h=document.createElement('b');h.textContent=r.f2||'-';d.appendChild(h);
+    [r.f4?'الأم: '+r.f4:'',r.f6,'التاريخ: '+stamp(r.createdAt).split(' ')[0]].forEach(function(s){if(s){var p=document.createElement('div');p.textContent=s;d.appendChild(p);}});
+    d.onclick=function(){src={r:r,f:function(){return sheet(r,r.id);}};fontsReady.then(function(){openPrev(src.f());});};
+    b.appendChild(d);
+  });
+  if(a.length>100){var m=document.createElement('div');m.className='rc';m.textContent='يظهر أول 100 نتيجة، دقّق البحث لتضييق النتائج';b.appendChild(m);}
+}
+function openList(fc){dbAll().then(function(a){ALL=a.sort(function(x,y){return y.createdAt-x.createdAt;});ALL.forEach(function(r){r._s=nz(joined(r));});$('q').value='';nav('lst');renderList();if(fc)$('q').focus();});}
+$('bList').onclick=function(){openList(0);};$('bSearch').onclick=function(){openList(1);};$('q').oninput=renderList;
+/* reports */
+var MN=['كانون الثاني','شباط','آذار','نيسان','أيار','حزيران','تموز','آب','أيلول','تشرين الأول','تشرين الثاني','كانون الأول'],RS=null;
+function sum(c){return c.reduce(function(p,q){return p+q;},0);}
+function drawChart(x,a,b,w,h,c,fs){
+  var mx=Math.max.apply(null,c.concat([1])),bw=w/12,av=sum(c)/12,Y=function(v){return b+h-h*.88*v/mx;};
+  x.save();x.direction='ltr';x.textAlign='center';x.font='600 '+fs+'px '+FF;x.strokeStyle='#dfe2f0';x.lineWidth=1;
+  for(var g=0;g<=4;g++){var yy=b+h-h*.88*g/4;x.beginPath();x.moveTo(a,yy);x.lineTo(a+w,yy);x.stroke();}
+  c.forEach(function(v,i){var X=a+i*bw+bw*.2;x.fillStyle=NAVY;x.fillRect(X,Y(v),bw*.6,b+h-Y(v));x.fillStyle=INK;if(v)x.fillText(v,X+bw*.3,Y(v)-fs*.4);x.fillStyle='#6a7092';x.fillText(i+1,X+bw*.3,b+h+fs*1.3);});
+  x.beginPath();c.forEach(function(v,i){var X=a+i*bw+bw/2;if(i)x.lineTo(X,Y(v));else x.moveTo(X,Y(v));});x.strokeStyle='#f4586a';x.lineWidth=fs/6;x.stroke();
+  x.setLineDash([fs/2,fs/3]);x.strokeStyle=GOLD;x.beginPath();x.moveTo(a,Y(av));x.lineTo(a+w,Y(av));x.stroke();x.restore();
+}
+function gr(c,i){return i>0&&c[i-1]?Math.round((c[i]-c[i-1])/c[i-1]*100)+'%':'-';}
+function drawRep(){
+  var y=+$('ry').value,m=+$('rm').value;
+  dbAll().then(function(a){
+    var c=[0,0,0,0,0,0,0,0,0,0,0,0];a.forEach(function(r){var d=new Date(r.createdAt);if(d.getFullYear()===y)c[d.getMonth()]++;});
+    RS={y:y,m:m,c:c,tot:a.length};
+    var cv=$('rc'),x=cv.getContext('2d');cv.width=760;cv.height=340;drawChart(x,10,12,740,285,c,14);
+    $('rt').innerHTML='<table class="rt"><tr><th>الشهر</th><th>القيود</th><th>النمو</th></tr>'+c.map(function(v,i){return'<tr><td>'+MN[i]+' ('+(i+1)+')</td><td>'+v+'</td><td dir="ltr">'+gr(c,i)+'</td></tr>';}).join('')+'</table>';
+    $('rs').innerHTML=[['إجمالي '+MN[m],c[m]],['إجمالي '+y,sum(c)],['الإجمالي العام',a.length]].map(function(p){return'<div class="stat"><span>'+p[0]+'</span><b>'+p[1]+'</b></div>';}).join('');
+  });
+}
+function repSheet(q){
+  var cv=document.createElement('canvas');cv.width=W;cv.height=H;var x=cv.getContext('2d'),c=q.c;x.fillStyle='#fff';x.fillRect(0,0,W,H);
+  background(x,prng(q.y),'RPT-'+q.y);header(x,String(q.y),'تقرير');title(x,'تقرير وإحصاء القيود لسنة '+q.y);
+  drawChart(x,20*MM,68*MM,170*MM,58*MM,c,2.8*MM);
+  x.direction='rtl';x.textAlign='center';x.fillStyle='#6a7092';fnt(x,2.9,600);x.fillText('الأعمدة: عدد القيود · الخط الأحمر: النمو · المتقطع: المعدل الشهري',W/2,139*MM);
+  var T=143*MM,rh=7.6*MM,cw=[90*MM,40*MM,40*MM],hd=['الشهر','عدد القيود','النمو'];
+  for(var i=0;i<13;i++){var yy=T+i*rh,xx=190*MM;cw.forEach(function(w,j){xx-=w;x.fillStyle=i?(i%2?'rgba(244,247,251,.85)':'rgba(255,255,255,.7)'):NAVY;x.fillRect(xx,yy,w,rh);x.strokeStyle='#c9d1e2';x.lineWidth=.25*MM;x.strokeRect(xx,yy,w,rh);
+    var s=i?(j===0?MN[i-1]+' ('+i+')':j===1?c[i-1]:gr(c,i-1)):hd[j];x.fillStyle=i?INK:'#fff';x.direction=j?'ltr':'rtl';x.textAlign='center';fnt(x,3.8,i?600:700);x.fillText(s,xx+w/2,yy+rh*.68);});}
+  [['إجمالي '+MN[q.m],c[q.m]],['إجمالي سنة '+q.y,sum(c)],['الإجمالي العام',q.tot]].forEach(function(p,k){
+    var bx=20*MM+k*58*MM;rr(x,bx,248*MM,54*MM,20*MM,2*MM);x.fillStyle='rgba(241,244,249,.92)';x.fill();x.strokeStyle='#cdd4e3';x.stroke();
+    x.direction='rtl';x.textAlign='center';x.fillStyle='#6a7092';fnt(x,3.2,600);x.fillText(p[0],bx+27*MM,248*MM+6.5*MM);x.fillStyle=NAVY;fnt(x,7,700);x.fillText(p[1],bx+27*MM,248*MM+15.5*MM);});
+  footer(x,'RPT-'+q.y,Date.now());return cv;
+}
+function repSrc(){var q=RS;src={n:'تقرير-'+q.y,f:function(){return repSheet(q);}};}
+$('bRep').onclick=function(){dbAll().then(function(a){var ys={},cy=new Date().getFullYear();ys[cy]=1;a.forEach(function(r){ys[new Date(r.createdAt).getFullYear()]=1;});
+  $('ry').innerHTML=Object.keys(ys).sort().reverse().map(function(y){return'<option>'+y+'</option>';}).join('');
+  $('rm').innerHTML=MN.map(function(n,i){return'<option value="'+i+'">'+n+'</option>';}).join('');$('rm').value=new Date().getMonth();nav('rep');drawRep();});};
+$('ry').onchange=$('rm').onchange=drawRep;
+$('rPrev').onclick=function(){repSrc();fontsReady.then(function(){openPrev(src.f());});};
+$('rJpg').onclick=function(){repSrc();doJpg();};$('rPdf').onclick=function(){repSrc();doPdf();};$('rPrn').onclick=function(){repSrc();doPrint();};
+/* import */
+function lib(){return window.XLSX?Promise.resolve():new Promise(function(ok,no){var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';s.onload=ok;s.onerror=no;document.head.appendChild(s);});}
+function csv(t){t=t.replace(/^\uFEFF/,'');var l=t.split('\n')[0],d=[',',';','\t'].sort(function(a,b){return l.split(b).length-l.split(a).length;})[0],R=[],r=[],c='',q=0;
+  for(var i=0;i<t.length;i++){var h=t[i];if(q){if(h==='"'){if(t[i+1]==='"'){c+='"';i++;}else q=0;}else c+=h;}else if(h==='"')q=1;else if(h===d){r.push(c);c='';}else if(h==='\n'||h==='\r'){if(h==='\r'&&t[i+1]==='\n')i++;r.push(c);c='';R.push(r);r=[];}else c+=h;}
+  if(c||r.length){r.push(c);R.push(r);}return R;}
+function p2(n){return('0'+n).slice(-2);}
+function pd(v){var m=/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/.exec(v);if(m)return m[1]+'-'+p2(m[2])+'-'+p2(m[3]);m=/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})/.exec(v);return m?m[3]+'-'+p2(m[2])+'-'+p2(m[1]):'';}
+function cell(f,v){if(v instanceof Date){v=new Date(v.getTime()+43200000);v=v.getFullYear()+'-'+p2(v.getMonth()+1)+'-'+p2(v.getDate());}
+  v=en(v==null?'':v).trim();if(f[2]==='date')return pd(v);
+  if(f[2]==='tel'){v=v.replace(/\D/g,'').slice(0,11);if(v.length===10&&v[0]==='7')v='0'+v;return v;}
+  if(f[2]==='coord'){var d=v.replace(/38S\s*MB/i,'').replace(/\D/g,'');return d?'38S MB '+d.slice(0,5)+' '+d.slice(5,10):'';}return v;}
+function dateOf(r){var v=r.f15||r.f16;if(!v){var m=/(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})/.exec(r.f1||'');if(m)v=m[3]+'-'+p2(m[2])+'-'+p2(m[1]);}var d=v?new Date(v+'T12:00:00'):null;return d&&!isNaN(d)?d.getTime():Date.now();}
+function nh(s){return nz(String(s)).replace(/[^\u0621-\u064Aa-z0-9]/g,'');}
+function doImp(rows){
+  rows=rows.filter(function(r){return r.some(function(v){return String(v).trim();});});if(!rows.length)return toast('الملف فارغ');
+  var map=[],hit=0,H=rows[0].map(nh),st=1;
+  FIELDS.forEach(function(f,k){var j=H.indexOf(nh(f[1]));map[k]=j;if(j>-1)hit++;});
+  if(hit<2){map=FIELDS.map(function(f,k){return k;});st=0;}
+  var out=[];
+  for(var i=st;i<rows.length;i++){var rec={};FIELDS.forEach(function(f,k){rec[f[0]]=cell(f,map[k]>-1?rows[i][map[k]]:'');});
+    if(!FIELDS.some(function(f){return rec[f[0]];}))continue;rec.createdAt=dateOf(rec);rec.code=codeOf(rec);out.push(rec);}
+  if(!out.length)return toast('لم يتم العثور على قيود');
+  if(!confirm('سيتم استيراد '+out.length+' قيد وإضافتها للقيود الموجودة. متابعة؟'))return;
+  db().then(function(d){var t=d.transaction('records','readwrite'),s=t.objectStore('records');out.forEach(function(r){s.add(r);});t.oncomplete=function(){refreshStats();toast('تم استيراد '+out.length+' قيد');};t.onerror=function(){toast('تعذّر الاستيراد');};});
+}
+var fi=$('fi');$('bImp').onclick=function(){fi.value='';fi.click();};
+fi.onchange=function(){var f=fi.files[0];if(!f)return;toast('جارٍ قراءة الملف...');
+  f.arrayBuffer().then(function(b){
+    if(/\.(csv|txt)$/i.test(f.name)){var s;try{s=new TextDecoder('utf-8',{fatal:true}).decode(b);}catch(e){s=new TextDecoder('windows-1256').decode(b);}doImp(csv(s));return;}
+    return lib().then(function(){var w=XLSX.read(b,{type:'array',cellDates:true});doImp(XLSX.utils.sheet_to_json(w.Sheets[w.SheetNames[0]],{header:1,raw:true,defval:''}));});
+  }).catch(function(){toast('تعذّر قراءة الملف (استيراد Excel يحتاج إنترنت أول مرة)');});};
+/* export & backup reminder */
+function expRows(a){return[FIELDS.map(function(f){return f[1];}).concat(['وقت الإضافة'])].concat(a.map(function(r){return FIELDS.map(function(f){return r[f[0]]||'';}).concat([stamp(r.createdAt)]);}));}
+function expo(kind){$('mdl').classList.add('hidden');dbAll().then(function(a){a.sort(function(x,y){return x.createdAt-y.createdAt;});var R=expRows(a),d=new Date(),n='قيود-'+d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate());
+  var done=function(){ls('lastExp',Date.now());bkCheck();};
+  if(kind==='c'){var s='\uFEFF'+R.map(function(r){return r.map(function(v){return'"'+String(v).replace(/"/g,'""')+'"';}).join(',');}).join('\r\n');deliver(new Blob([s],{type:'text/csv'}),n+'.csv');done();}
+  else lib().then(function(){var wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(R),'القيود');deliver(new Blob([XLSX.write(wb,{type:'array',bookType:'xlsx'})],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),n+'.xlsx');done();}).catch(function(){toast('تعذّر تجهيز Excel، جرّب CSV');});});}
+$('bExp').onclick=$('bkX').onclick=function(){$('mdl').classList.remove('hidden');};
+$('xX').onclick=function(){expo('x');};$('xC').onclick=function(){expo('c');};$('xN').onclick=function(){$('mdl').classList.add('hidden');};
+function bkCheck(w){var n=+ls('bkDays')||15,l=+ls('lastExp')||0,dd=l?Math.floor((Date.now()-l)/864e5):0,over=!l||dd>=n;
+  $('bkT').textContent=(l?'آخر تصدير قبل '+dd+' يوم':'لم تُصدّر أي نسخة احتياطية بعد')+(over?' — حان موعد التصدير!':'');$('bk').classList.toggle('warn',over);$('bkD').value=n;if(w&&over)toast('تذكير: صدّر نسخة احتياطية من القيود');}
+$('bkD').onchange=function(){ls('bkDays',this.value);bkCheck();};bkCheck();
 
 /* ---------- start ---------- */
 refreshStats();
