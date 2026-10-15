@@ -1,6 +1,6 @@
 {
- "name": "منظومة التحري المناطقي",
- "short_name": "التحري المناطقي",
+ "name": "LSIS",
+ "short_name": "LSIS",
  "lang": "ar",
  "dir": "rtl",
  "start_url": "./",
