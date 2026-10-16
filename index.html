@@ -804,7 +804,7 @@ function fillForm(r){
     var v=r[f[0]]||'';
     if(f[2]==='coord'){var d=digits(String(v).replace(/38\s*S\s*M\s*B/i,''));if(d.length===10){$('i_f12').value=d.slice(0,5);$('i_f12b').value=d.slice(5);}else if(v)rawF12=v;}
     else if(f[2]==='date')$('i_'+f[0]).value=isoDate(v);
-    else $('i_'+f[0]).value=nd(v);
+    else $('i_'+f[0]).value=(f[0]==='f13')?cleanNote(nd(v)):nd(v);
   });
 }
 function check(){
@@ -830,7 +830,7 @@ var dbp=null;
 function db(){return dbp||(dbp=new Promise(function(res,rej){var q=indexedDB.open('regional_db',1);q.onupgradeneeded=function(){q.result.createObjectStore('records',{keyPath:'id',autoIncrement:true});};q.onsuccess=function(){res(q.result);};q.onerror=function(){rej(q.error);};}));}
 function tx(mode,fn){return db().then(function(d){return new Promise(function(res,rej){var t=d.transaction('records',mode),out=fn(t.objectStore('records'));t.oncomplete=function(){res(out&&out.result);};t.onerror=t.onabort=function(){rej(t.error);};});});}
 var RECS=new Map(),LIST=[],META={},DUPG=[],DINFO={};
-function dval(r,f){var v=r[f[0]];if(v==null)v='';return f[2]==='date'?fmtDate(v):nd(String(v));}
+function dval(r,f){var v=r[f[0]];if(v==null)v='';if(f[0]==='f13')v=cleanNote(String(v));return f[2]==='date'?fmtDate(v):nd(String(v));}
 function mk(r){
   var hay=FIELDS.map(function(f){var t=dval(r,f);if(f[2]==='date'&&t){var s=isoDate(r[f[0]]);if(s)t+=' '+s+' '+s.replace(/-/g,'/');}return nrm(t).n;});
   hay.push(String(r.id));return{hay:hay,d:dOf(r)};
@@ -862,17 +862,19 @@ function dupNote(id){
 }
 function todayCount(){var s=startOfToday(),n=0;LIST.forEach(function(r){if(r.createdAt>=s)n++;});return n;}
 function homeStats(){countTo($('sTotal'),LIST.length);countTo($('sToday'),todayCount());bkRender();}
+function stripMeta(t){return String(t).split(/\r?\n/).filter(function(l){return !/(added time|task owner|task owner email|created time|created by|modified time|modified by|last modified time|last modified by)\s*[:：]/i.test(l);}).join('\n').trim();}
+function cleanNote(t){return normNoteDates(stripMeta(t));}
 function migrate(arr){
   var ch=[];
   arr.forEach(function(r){
     var c=false;
     ['f15','f16'].forEach(function(k){var v=r[k];if(!v)return;var nv=isoDate(v);if(nv&&nv!==v){r[k]=nv;c=true;}});
     if(r.f3&&/[A-Za-z\u0621-\u064A]|\d{1,2}:\d{2}/.test(r.f3)){var nb=fmtBirth(r.f3,false);if(nb!==r.f3){r.f3=nb;c=true;}}
-    if(r.f13){var n13=normNoteDates(r.f13);if(n13!==r.f13){r.f13=n13;c=true;}}
+    if(r.f13){var n13=normNoteDates(stripMeta(r.f13));if(n13!==r.f13){r.f13=n13;c=true;}}
     if(c)ch.push(r);
   });
   if(!ch.length)return Promise.resolve(arr);
-  return tx('readwrite',function(s){ch.forEach(function(r){s.put(r);});}).then(function(){toast('تم تصحيح صيغة التواريخ في '+ch.length+' قيد');return arr;});
+  return tx('readwrite',function(s){ch.forEach(function(r){s.put(r);});}).then(function(){toast('تم تنظيف وتصحيح '+ch.length+' قيد');return arr;});
 }
 function reload(){
   return tx('readonly',function(s){return s.getAll();}).then(function(a){return migrate(a||[]);}).then(function(a){
@@ -1146,7 +1148,6 @@ function softLines(x,rnd){
 }
 function background(x,rnd,code){
   softLines(x,rnd);
-  x.lineWidth=0.3*MM;x.strokeStyle='rgba(95,104,128,.55)';x.strokeRect(5*MM,5*MM,200*MM,287*MM);
   microtext(x,283.6*MM,'مشروع الأمن المناطقي • '+code+' • ','rgba(95,104,128,.5)');
 }
 function header(x,lab,val){
@@ -1165,7 +1166,7 @@ function title(x,t){
   rr(x,14*MM,46*MM,182*MM,11*MM,2*MM);x.fillStyle='rgba(243,244,247,.9)';x.fill();x.strokeStyle=LGR;x.lineWidth=0.3*MM;x.stroke();
   x.direction='rtl';x.textAlign='center';x.fillStyle=NAVY;fnt(x,5.8,700);x.fillText(t,W/2,46*MM+5.5*MM+0.35*5.8*MM);
 }
-function valOf(rec,f){var v=nd(rec[f[0]]||'').trim();return f[2]==='date'?fmtDate(v):v;}
+function valOf(rec,f){var v=nd(rec[f[0]]||'').trim();if(f[0]==='f13')v=cleanNote(v);return f[2]==='date'?fmtDate(v):v;}
 function wrap(x,text,maxW,fs,maxLines){
   fnt(x,fs,400);x.direction='rtl';var out=[];
   String(text).split(/\n/).forEach(function(p){
@@ -1554,6 +1555,7 @@ var TGT=[
  ['f15',4,['التاريخ','تاريخ']],
  ['f16',1,['تاريخ الإجابة','تاريخ الاجابة','تاريخ الاجابه','الاجابة','الاجابه','تاريخ الجواب','الجواب','تاريخ الرد','الرد']],
  ['_added',1,['وقت وتاريخ الإضافة','وقت وتاريخ الاضافة','تاريخ الإضافة','تاريخ الاضافة']],
+ ['_skip',1,['Added Time','Task Owner','Task Owner Email','Created Time','Created By','Modified Time','Modified By','Last Modified Time','Last Modified By']],
  ['_no',1,['رقم القيد','ت','#','تسلسل','التسلسل','الرقم','م']]
 ];
 var AMAP={};TGT.forEach(function(t){t[2].forEach(function(a){var k=hkey(a);if(!AMAP[k])AMAP[k]={k:t[0],r:t[1]};});});
@@ -1568,14 +1570,14 @@ function mapHeader(hdr){
   cols.forEach(function(x){if(!x.m)return;var cur=chosen[x.m.k];if(!cur||x.m.r<cur.m.r)chosen[x.m.k]=x;});
   cols.forEach(function(x){
     if(x.m&&chosen[x.m.k]===x)out.push({c:x.c,k:x.m.k,h:x.h});
-    else if(x.m&&(x.m.k==='_no'||x.m.k==='_added'))return;
+    else if(x.m&&(x.m.k==='_no'||x.m.k==='_added'||x.m.k==='_skip'))return;
     else out.push({c:x.c,k:'_note',h:x.h});
   });
   return out;
 }
 function distinctCount(m){var s={};m.forEach(function(x){if(x.k.charAt(0)!=='_')s[x.k]=1;});return Object.keys(s).length;}
 function fieldLabel(k){for(var i=0;i<FIELDS.length;i++)if(FIELDS[i][0]===k)return FIELDS[i][1];return k;}
-function labelOf(k){if(/^f\d+$/.test(k))return fieldLabel(k);if(k.indexOf('p_')===0)return 'الاسم الرباعي واللقب';if(k.indexOf('a_')===0)return 'العنوان';if(k==='b_date')return 'رقم وتاريخ الكتاب';return 'معلومات أخرى';}
+function labelOf(k){if(k==='_skip')return 'تم تجاهله';if(/^f\d+$/.test(k))return fieldLabel(k);if(k.indexOf('p_')===0)return 'الاسم الرباعي واللقب';if(k.indexOf('a_')===0)return 'العنوان';if(k==='b_date')return 'رقم وتاريخ الكتاب';return 'معلومات أخرى';}
 function aPart(label,v){v=nd(v||'').replace(/\s+/g,' ').trim();if(!v)return '';var nv=nrm(v).n,nl=nrm(label).n;if(nv.indexOf(nl)===0||nv.indexOf('ال'+nl)===0)return v;return /^[0-9a-zA-Z\/\-]{1,8}$/.test(v)?label+' '+v:v;}
 function lmPart(v){v=nd(v||'').replace(/\s+/g,' ').trim();if(!v)return '';return /^(قرب|اقرب|أقرب|مقابل|بجانب|جنب|خلف|امام|أمام|بالقرب)/.test(v)?v:'قرب '+v;}
 function normCoord(v){var s=nd(v),d=digits(s.replace(/38\s*S\s*M\s*B/i,''));return d.length===10?('38S MB '+d.slice(0,5)+' '+d.slice(5)):s.trim();}
@@ -1584,7 +1586,7 @@ function buildRec(cells,nums,cm){
   var v={},isn={},notes=[],rec={},added=null;
   FIELDS.forEach(function(f){rec[f[0]]='';});
   cm.forEach(function(m){
-    var x=cells[m.c];x=(x==null)?'':String(x).trim();if(!x||m.k==='_no')return;
+    var x=cells[m.c];x=(x==null)?'':String(x).trim();if(!x||m.k==='_no'||m.k==='_skip')return;
     if(m.k==='_note'){notes.push(m.h+': '+nd(x));return;}
     v[m.k]=x;isn[m.k]=!!(nums&&nums[m.c]);
   });
@@ -1625,7 +1627,7 @@ function analyze(res,fname2){
       map=FIELDS.slice(0,Math.min(16,w)).map(function(f,k){return{c:k,k:f[0],h:f[1]};});start=0;positionalAny=true;
     }else{map=bm;start=bi+1;}
     var before=cands.length;
-    map.forEach(function(m){if(m.k==='_no'||m.k==='_added')return;var lbl=labelOf(m.k),key=m.h+'|'+lbl;if(!lines.some(function(x){return x.key===key;}))lines.push({key:key,h:m.h,lbl:lbl,note:m.k==='_note'});});
+    map.forEach(function(m){if(m.k==='_no'||m.k==='_added')return;var lbl=labelOf(m.k),key=m.h+'|'+lbl;if(!lines.some(function(x){return x.key===key;}))lines.push({key:key,h:m.h,lbl:lbl,note:m.k==='_note',skip:m.k==='_skip'});});
     for(i=start;i<rows.length;i++){
       var cells=rows[i]||[];if(!cells.some(function(v){return v!=null&&String(v).trim()!=='';}))continue;
       var o=buildRec(cells,num?num[i]:null,map);
@@ -1653,7 +1655,7 @@ function showSummary(){
   card.appendChild(el('div','row','عدد القيود المقروءة: '+s.cands.length+(s.sheets>1?(' (من '+s.sheets+' أوراق)'):'')));
   if(s.positional)card.appendChild(el('div','row','لم يتم التعرف على عناوين بعض الأوراق، لذلك اعتُمد ترتيب الأعمدة كما في الاستمارة.'));
   card.appendChild(el('div','row','توزيع أعمدة الملف على حقول الاستمارة:'));
-  var ch=el('div','chips');s.lines.forEach(function(l){ch.appendChild(el('span','cp'+(l.note?'':' ok'),l.h+' ← '+l.lbl));});card.appendChild(ch);
+  var ch=el('div','chips');s.lines.forEach(function(l){ch.appendChild(el('span','cp'+((l.note||l.skip)?'':' ok'),l.skip?(l.h+' — '+l.lbl):(l.h+' ← '+l.lbl)));});card.appendChild(ch);
   if(s.lines.some(function(l){return l.note;}))card.appendChild(el('div','row','الأعمدة غير المعروفة لا تُهمل: تُضاف محتوياتها إلى حقل «معلومات أخرى».'));
   var yc={};s.cands.forEach(function(c){var y=new Date(c.d).getFullYear();yc[y]=(yc[y]||0)+1;});
   card.appendChild(el('div','row','تواريخ القيود: من '+fmtD(s.cands[0].d)+' إلى '+fmtD(s.cands[s.cands.length-1].d)));
@@ -1884,7 +1886,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&ovl.length&
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
   if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
 })();
-window.__t={sheet:sheet,reportSheet:reportSheet,repData:repData,runSearch:runSearch,parseCSV:parseCSV,readXlsx:readXlsx,xlsxBlob:xlsxBlob,csvBlob:csvBlob,exportRows:exportRows,fname:fname,parseDate:parseDate,isoDate:isoDate,fmtBirth:fmtBirth,normNoteDates:normNoteDates,readForm:readForm,dupNote:dupNote,logoVariant:logoVariant,analyze:analyze,pdfBlob:pdfBlob,FIELDS:FIELDS,nd:nd,codeOf:codeOf,get RECS(){return RECS;},get DUPG(){return DUPG;},get ME(){return ME;}};
+window.__t={sheet:sheet,reportSheet:reportSheet,repData:repData,runSearch:runSearch,parseCSV:parseCSV,readXlsx:readXlsx,xlsxBlob:xlsxBlob,csvBlob:csvBlob,exportRows:exportRows,fname:fname,stripMeta:stripMeta,cleanNote:cleanNote,dval:dval,valOf:valOf,parseDate:parseDate,isoDate:isoDate,fmtBirth:fmtBirth,normNoteDates:normNoteDates,readForm:readForm,dupNote:dupNote,logoVariant:logoVariant,analyze:analyze,pdfBlob:pdfBlob,FIELDS:FIELDS,nd:nd,codeOf:codeOf,get RECS(){return RECS;},get DUPG(){return DUPG;},get ME(){return ME;}};
 })();
 
 </script>
