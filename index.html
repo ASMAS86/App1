@@ -387,6 +387,7 @@ button,.rc,.tab,.yr,.dchip,.lgw,.lg-logo{cursor:pointer}
   .pvbody.z canvas{max-width:none}
 }
 @media print{body{max-width:none!important;box-shadow:none!important;margin:0!important}}
+@media print{html,body{height:auto!important}#printArea img{display:block;margin:0 auto;width:auto;height:284mm;max-width:100%;page-break-inside:avoid;break-inside:avoid}}
 </style>
 </head>
 <body>
@@ -598,11 +599,9 @@ button,.rc,.tab,.yr,.dchip,.lgw,.lg-logo{cursor:pointer}
 </div></div>
 
 <div id="snd" class="ov hidden"><div class="sheetb">
-  <div class="grab"></div><h4>إرسال القيد</h4><p>اختر صيغة الملف، ثم التطبيق الذي تريد الإرسال عبره.</p>
-  <div class="seg"><button id="sPdf" class="on">PDF</button><button id="sJpg">صورة JPEG</button></div>
-  <button class="xo" id="sFile"><svg class="i"><use href="#send"/></svg><span>إرسال الاستمارة كملف<small>تفتح قائمة تطبيقات الايفون: واتساب، تليغرام، البريد، AirDrop...</small></span></button>
-  <div class="sub2">أو إرسال ملخص نصي (بدون ملف):</div>
-  <div class="qr"><button class="xo" id="sWa" style="margin:0"><span>واتساب</span></button><button class="xo" id="sTg" style="margin:0"><span>تليغرام</span></button></div>
+  <div class="grab"></div><h4>إرسال القيد</h4><p>تُرسل صورة الاستمارة نفسها (وليس رسالة نصية). اختر الصيغة ثم اضغط إرسال، وبعدها اختر واتساب أو تليغرام من القائمة.</p>
+  <div class="seg"><button id="sJpg" class="on">صورة JPEG</button><button id="sPdf">PDF</button></div>
+  <button class="xo" id="sFile"><svg class="i"><use href="#send"/></svg><span>إرسال الاستمارة<small>تفتح قائمة تطبيقات الايفون: واتساب، تليغرام، البريد، AirDrop...</small></span></button>
   <button class="xc" id="sCancel">إلغاء</button>
 </div></div>
 
@@ -634,15 +633,52 @@ var FIELDS=[
 ];
 
 /* ---------- dates ---------- */
-function parseDate(v){
-  if(v==null)return null;var s=nd(v).trim();if(!s)return null;var m,y,mo,d;
-  if((m=/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})(?!\d)/.exec(s))){y=+m[1];mo=+m[2];d=+m[3];}
+var MON_EN={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+var MON_AR=(function(){
+  var L=[['كانون الثاني',1],['كانون الاول',12],['كانون الأول',12],['تشرين الثاني',11],['تشرين الاول',10],['تشرين الأول',10],['شباط',2],['اذار',3],['آذار',3],['نيسان',4],['ايار',5],['أيار',5],['حزيران',6],['تموز',7],['اب',8],['آب',8],['ايلول',9],['أيلول',9],['يناير',1],['فبراير',2],['مارس',3],['ابريل',4],['أبريل',4],['مايو',5],['يونيو',6],['يوليو',7],['اغسطس',8],['أغسطس',8],['سبتمبر',9],['اكتوبر',10],['أكتوبر',10],['نوفمبر',11],['ديسمبر',12]];
+  var AR='\u0621-\u064A';
+  return L.map(function(p){var n=nrm(p[0]).n;return[p[0],p[1],new RegExp('(^|[^'+AR+'])'+n+'(?!['+AR+'])')];}).sort(function(a,b){return b[0].length-a[0].length;});
+})();
+function yy2(n,birth){var cur=new Date().getFullYear()%100;return birth?(n>cur?1900+n:2000+n):2000+n;}
+function dateParts(v,birth){
+  if(v==null)return null;var s=nd(v).trim();if(!s)return null;var m,y,mo,d=null;
+  var t=s.replace(/\b\d{1,2}:\d{2}(?::\d{2})?\s*(?:am|pm|ص|م)?/gi,' ').replace(/\s+/g,' ').trim();
+  var ns=nrm(t).n,mon=0,rest=ns,en=/(^|[^a-z])(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*(?![a-z])/.exec(ns);
+  if(en){mon=MON_EN[en[2]];rest=ns.replace(en[0],en[1]+' ');}
+  else{for(var i=0;i<MON_AR.length&&!mon;i++){var re=MON_AR[i][2].exec(ns);if(re){mon=MON_AR[i][1];rest=ns.replace(re[0],re[1]+' ');}}}
+  if(mon){
+    var nums=rest.match(/\d+/g)||[],small=[],yr4=null,big2=null;
+    nums.forEach(function(n){if(n.length===4&&yr4===null)yr4=+n;else if(+n>=1&&+n<=31)small.push(+n);else if(n.length===2&&+n>31&&big2===null)big2=+n;});
+    if(yr4!==null){y=yr4;d=small.length?small[0]:null;}
+    else if(big2!==null&&small.length>=1){d=small[0];y=yy2(big2,birth);}
+    else if(small.length>=2){d=small[0];y=yy2(small[1],birth);}
+    else return null;
+    mo=mon;
+  }
+  else if((m=/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})(?!\d)/.exec(s))){y=+m[1];mo=+m[2];d=+m[3];}
   else if((m=/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})(?!\d)/.exec(s))){d=+m[1];mo=+m[2];y=+m[3];}
+  else if((m=/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2})(?!\d)/.exec(s))){d=+m[1];mo=+m[2];y=yy2(+m[3],birth);}
+  else if((m=/^(\d{4})[-\/.](\d{1,2})$/.exec(s))){y=+m[1];mo=+m[2];}
+  else if((m=/^(\d{1,2})[-\/.](\d{4})$/.exec(s))){mo=+m[1];y=+m[2];}
   else if(/^\d{5}(\.\d+)?$/.test(s)&&+s>=20000&&+s<=90000){var u=new Date(Math.round((+s-25569)*86400000));y=u.getUTCFullYear();mo=u.getUTCMonth()+1;d=u.getUTCDate();}
   else return null;
-  if(mo<1||mo>12||d<1||d>31||y<1900||y>2200)return null;
-  var dt=new Date(y,mo-1,d,12,0,0);if(dt.getMonth()!==mo-1)return null;
-  return dt.getTime();
+  if(mo<1||mo>12||y<1900||y>2200)return null;
+  if(d!==null){if(d<1||d>31)return null;var dt=new Date(y,mo-1,d,12,0,0);if(dt.getMonth()!==mo-1)return null;}
+  return{y:y,m:mo,d:d};
+}
+function parseDate(v){var p=dateParts(v);if(!p)return null;return new Date(p.y,p.m-1,p.d||1,12,0,0).getTime();}
+function fmtBirth(v,isn){
+  var s=nd(v||'').trim();if(!s)return '';
+  if(isn&&/^\d{5}(\.\d+)?$/.test(s)&&+s>=10000&&+s<=90000){var u=new Date(Math.round((+s-25569)*86400000));return p2(u.getUTCDate())+'/'+p2(u.getUTCMonth()+1)+'/'+u.getUTCFullYear();}
+  if(!/[A-Za-z\u0621-\u064A]|\d{1,2}:\d{2}/.test(s))return s;
+  var p=dateParts(s,true);if(!p)return s;
+  return p.d?(p2(p.d)+'/'+p2(p.m)+'/'+p.y):(p2(p.m)+'/'+p.y);
+}
+function normNoteDates(t){
+  if(!t)return t;
+  function f(mn,d,y){var k=MON_EN[mn.slice(0,3).toLowerCase()];return k?p2(+d)+'/'+p2(k)+'/'+y:null;}
+  return t.replace(/\b(\d{1,2})[-\/ ]([A-Za-z]{3,9})[-\/ ,]+(\d{4})\b/g,function(m,d,mn,y){return f(mn,d,y)||m;})
+          .replace(/\b([A-Za-z]{3,9})\s+(\d{1,2}),?\s+(\d{4})\b/g,function(m,mn,d,y){return f(mn,d,y)||m;});
 }
 function iso(ms){var d=new Date(ms);return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());}
 function isoDate(v){var m=parseDate(v);return m?iso(m):'';}
@@ -826,9 +862,21 @@ function dupNote(id){
 }
 function todayCount(){var s=startOfToday(),n=0;LIST.forEach(function(r){if(r.createdAt>=s)n++;});return n;}
 function homeStats(){countTo($('sTotal'),LIST.length);countTo($('sToday'),todayCount());bkRender();}
+function migrate(arr){
+  var ch=[];
+  arr.forEach(function(r){
+    var c=false;
+    ['f15','f16'].forEach(function(k){var v=r[k];if(!v)return;var nv=isoDate(v);if(nv&&nv!==v){r[k]=nv;c=true;}});
+    if(r.f3&&/[A-Za-z\u0621-\u064A]|\d{1,2}:\d{2}/.test(r.f3)){var nb=fmtBirth(r.f3,false);if(nb!==r.f3){r.f3=nb;c=true;}}
+    if(r.f13){var n13=normNoteDates(r.f13);if(n13!==r.f13){r.f13=n13;c=true;}}
+    if(c)ch.push(r);
+  });
+  if(!ch.length)return Promise.resolve(arr);
+  return tx('readwrite',function(s){ch.forEach(function(r){s.put(r);});}).then(function(){toast('تم تصحيح صيغة التواريخ في '+ch.length+' قيد');return arr;});
+}
 function reload(){
-  return tx('readonly',function(s){return s.getAll();}).then(function(a){
-    rebuild(a||[]);var v=stack[stack.length-1];
+  return tx('readonly',function(s){return s.getAll();}).then(function(a){return migrate(a||[]);}).then(function(a){
+    rebuild(a);var v=stack[stack.length-1];
     if((v==='home'||v==='recs'||v==='det'||v==='rep')&&ON[v])ON[v]();
   });
 }
@@ -1165,7 +1213,7 @@ function footer(x,code,ts,label){
 function newCanvas(){var c=document.createElement('canvas');c.width=W;c.height=H;var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);return{c:c,x:x};}
 function sheet(rec,id){
   var o=newCanvas(),x=o.x,code=codeOf(rec),rnd=prng(cyrb53(joined(rec),7)%4294967296);
-  background(x,rnd,code);header(x,'رقم القيد',id?('000000'+id).slice(-6):'— — —');title(x,'استمارة التحري الميداني');table(x,rec);
+  background(x,rnd,code);header(x,'رقم القيد',id?('000000'+id).slice(-6):'— — —');title(x,'استمارة الأمن المناطقي');table(x,rec);
   footer(x,code,rec.createdAt||Date.now(),'وقت وتاريخ الإضافة');
   return o.c;
 }
@@ -1279,15 +1327,15 @@ function pdfBlob(jpg,w,h){
 function build(src){return src.rep?reportSheet(src.rep):sheet(src.rec,src.id);}
 function cleanName(s,fallback){
   var n=String(s).replace(/[\\\/:*?"<>|\u0000-\u001f]/g,' ').replace(/\s+/g,' ').replace(/^[\s.]+|[\s.]+$/g,'').slice(0,100).trim();
-  if(!n){var d=new Date();n=fallback+'-'+d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate())+'-'+p2(d.getHours())+p2(d.getMinutes());}
+  if(!n){var d=new Date();n=fallback+' '+d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())+' '+p2(d.getHours())+'-'+p2(d.getMinutes());}
   return n;
 }
-function fname(ext,rec){return cleanName(nd([rec&&rec.f2,rec&&rec.f14].filter(Boolean).join(' ')),'form')+'.'+ext;}
+function fname(ext,rec){return cleanName(nd([rec&&rec.f2,rec&&rec.f14].filter(Boolean).join(' ')),'استمارة الأمن المناطقي')+'.'+ext;}
 function nameOf(src,ext){return src.rep?('تقرير القيود '+src.rep.y+'-'+p2(src.rep.m+1)+'.'+ext):fname(ext,src.rec);}
 function deliver(blob,name,title){
   var f;try{f=new File([blob],name,{type:blob.type});}catch(e){f=null;}
   if(!DESK&&f&&navigator.canShare&&navigator.canShare({files:[f]})){
-    return navigator.share({files:[f],title:title||name}).then(function(){return true;},function(e){if(e&&e.name==='AbortError')return false;dl(blob,name);return true;});
+    return navigator.share({files:[f]}).then(function(){return true;},function(e){if(e&&e.name==='AbortError')return false;dl(blob,name);return true;});
   }
   dl(blob,name);return Promise.resolve(true);
 }
@@ -1295,19 +1343,29 @@ function dl(blob,name){var a=document.createElement('a');a.href=URL.createObject
 function blobFor(src,fmt){var c=build(src);return fmt==='jpg'?new Blob([jpgBytes(c)],{type:'image/jpeg'}):pdfBlob(jpgBytes(c),c.width,c.height);}
 function doJpg(src){deliver(blobFor(src,'jpg'),nameOf(src,'jpg'));}
 function doPdf(src){deliver(blobFor(src,'pdf'),nameOf(src,'pdf'));}
-function doPrint(src){
+function printViaPage(src){
   var c=build(src),img=new Image(),go=function(){window.print();};
   img.src=c.toDataURL('image/jpeg',0.95);$('printArea').innerHTML='';$('printArea').appendChild(img);
   if(img.decode)img.decode().then(go,go);else img.onload=go;
 }
+function doPrint(src){
+  if(!DESK&&navigator.canShare){
+    var f;try{f=new File([blobFor(src,'pdf')],nameOf(src,'pdf'),{type:'application/pdf'});}catch(e){f=null;}
+    if(f&&navigator.canShare({files:[f]})){
+      var go=function(){navigator.share({files:[f]}).catch(function(){});};
+      if(localStorage.getItem('pr_hint')){go();return;}
+      ask('الطباعة','ستظهر قائمة المشاركة. اختر منها «طباعة» لتُطبع الاستمارة على ورقة A4 كاملة وبدون أي روابط.','متابعة','إلغاء').then(function(ok){if(ok){localStorage.setItem('pr_hint','1');go();}});
+      return;
+    }
+  }
+  printViaPage(src);
+}
 function textOf(src){var L=['استمارة التحري الميداني'];FIELDS.forEach(function(f){L.push(f[1]+': '+(dval(src.rec,f)||NA));});return L.join('\n');}
 var SND={src:null,fmt:'pdf'};
-function openSend(src){SND.src=src;SND.fmt='pdf';$('sPdf').classList.add('on');$('sJpg').classList.remove('on');openOv('snd');}
+function openSend(src){SND.src=src;SND.fmt='jpg';$('sJpg').classList.add('on');$('sPdf').classList.remove('on');openOv('snd');}
 $('sPdf').onclick=function(){SND.fmt='pdf';this.classList.add('on');$('sJpg').classList.remove('on');};
 $('sJpg').onclick=function(){SND.fmt='jpg';this.classList.add('on');$('sPdf').classList.remove('on');};
-$('sFile').onclick=function(){var s=SND.src;if(!s)return;deliver(blobFor(s,SND.fmt),nameOf(s,SND.fmt),'استمارة التحري الميداني');};
-$('sWa').onclick=function(){if(SND.src)window.open('https://wa.me/?text='+encodeURIComponent(textOf(SND.src)),'_blank');};
-$('sTg').onclick=function(){if(SND.src)window.open('https://t.me/share/url?url=%20&text='+encodeURIComponent(textOf(SND.src)),'_blank');};
+$('sFile').onclick=function(){var s=SND.src;if(!s)return;deliver(blobFor(s,SND.fmt),nameOf(s,SND.fmt));};
 $('sCancel').onclick=back;
 
 /* ---------- preview ---------- */
@@ -1534,7 +1592,7 @@ function buildRec(cells,nums,cm){
   var nm=g('f2'),parts=['p_father','p_grand','p_ggrand','p_sur'].map(g).filter(Boolean);
   if(parts.length&&nm.split(' ').filter(Boolean).length<3)nm=[nm].concat(parts).filter(Boolean).join(' ');
   rec.f2=nm;rec.f4=g('f4');rec.f5=g('f5');rec.f7=g('f7');rec.f8=g('f8');rec.f10=g('f10');rec.f11=g('f11');rec.f14=g('f14');
-  rec.f3=(isn.f3&&+v.f3>=10000&&+v.f3<=90000)?serialToDMY(v.f3):g('f3');
+  rec.f3=fmtBirth(v.f3,isn.f3);
   var ph=digits(v.f9||'');if(ph.length===10&&ph.charAt(0)==='7')ph='0'+ph;rec.f9=ph||g('f9');
   rec.f12=v.f12?normCoord(v.f12):'';
   var addr=[g('a_gov'),g('a_dist'),g('a_sub'),g('a_area'),g('f6'),aPart('محلة',v.a_mah),aPart('زقاق',v.a_zq),aPart('دار',v.a_dar),aPart('شارع',v.a_st),lmPart(v.a_lm)].filter(Boolean);
@@ -1543,7 +1601,7 @@ function buildRec(cells,nums,cm){
   rec.f1=(bn&&bd)?('رقم '+bn+' في '+bd):(bn||bd);
   rec.f15=v.f15?(isoDate(v.f15)||g('f15')):'';rec.f16=v.f16?(isoDate(v.f16)||g('f16')):'';
   if(!rec.f15&&v.b_date&&isoDate(v.b_date))rec.f15=isoDate(v.b_date);
-  rec.f13=[g('f13')].concat(notes).filter(Boolean).join('\n');
+  rec.f13=normNoteDates([g('f13')].concat(notes).filter(Boolean).join('\n'));
   if(v._added){var ms=parseDate(v._added);if(ms){var t=/(\d{1,2}):(\d{2})/.exec(nd(v._added)),dd=new Date(ms);if(t)dd.setHours(+t[1],+t[2],0,0);added=dd.getTime();}}
   return{rec:rec,added:added};
 }
@@ -1826,7 +1884,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&ovl.length&
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
   if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
 })();
-window.__t={sheet:sheet,reportSheet:reportSheet,repData:repData,runSearch:runSearch,parseCSV:parseCSV,readXlsx:readXlsx,xlsxBlob:xlsxBlob,csvBlob:csvBlob,exportRows:exportRows,fname:fname,readForm:readForm,dupNote:dupNote,logoVariant:logoVariant,analyze:analyze,pdfBlob:pdfBlob,FIELDS:FIELDS,nd:nd,codeOf:codeOf,get RECS(){return RECS;},get DUPG(){return DUPG;},get ME(){return ME;}};
+window.__t={sheet:sheet,reportSheet:reportSheet,repData:repData,runSearch:runSearch,parseCSV:parseCSV,readXlsx:readXlsx,xlsxBlob:xlsxBlob,csvBlob:csvBlob,exportRows:exportRows,fname:fname,parseDate:parseDate,isoDate:isoDate,fmtBirth:fmtBirth,normNoteDates:normNoteDates,readForm:readForm,dupNote:dupNote,logoVariant:logoVariant,analyze:analyze,pdfBlob:pdfBlob,FIELDS:FIELDS,nd:nd,codeOf:codeOf,get RECS(){return RECS;},get DUPG(){return DUPG;},get ME(){return ME;}};
 })();
 
 </script>
